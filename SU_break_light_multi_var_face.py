@@ -119,20 +119,20 @@ def print_SUAB(c,faces):
       was = 0
       while ci < len(cfaces[fi]):
         if cfaces[fi][ci] in cfaces[mf]:
-	  if was == 0:
-	    cfaces[fi][ci] = newc
-	    was = 1
-	    ci += 1
-	  else:
-	    del cfaces[fi][ci]
-	else:
-	  ci += 1
+          if was == 0:
+            cfaces[fi][ci] = newc
+            was = 1
+            ci += 1
+          else:
+            del cfaces[fi][ci]
+        else:
+          ci += 1
     del cfaces[mf]
     del csface[mf]
     fi = 0
     while fi < len(cfaces):
       if len(cfaces) < 3:
-	numf -= 1
+        numf -= 1
         del cfaces[fi]
         del csface[fi]
       else:
@@ -146,10 +146,10 @@ def print_SUAB(c,faces):
       cc.append(csucs)
 
   if len(set(cc)) > 3 and len(cfaces) > 3:
-    print S,U,A/C,B/C,C,len(set(cc)),len(cfaces),nface[3],nface[4],nface[5],\
+    print(S,U,A/C,B/C,C,len(set(cc)),len(cfaces),nface[3],nface[4],nface[5],\
       nface[6],nface[7],nface[8],nface[9],V,"X",hs[0],hs[1],hs[2],hs[3],\
       hs[4],hs[5],hs[6],hs[7],hs[8],"Y",hu[0],hu[1],hu[2],hu[3],hu[4],\
-      hu[5],hu[6],hu[7],hu[8],hu[9],hu[10],hu[11],hu[12]
+      hu[5],hu[6],hu[7],hu[8],hu[9],hu[10],hu[11],hu[12])
 
 def break_it(startc,startfaces,pb,sizelim):
   clist = [ startc ]
@@ -179,7 +179,7 @@ def break_it(startc,startfaces,pb,sizelim):
     if A / C * B / C < np.random.random() * pb and A * B * C > sizelim:
       C_break = np.random.normal(C / 2, C / 5)
       while C_break < 0 or C_break > C:
-	C_break = np.random.normal(C / 2, C / 5)
+        C_break = np.random.normal(C / 2, C / 5)
       c_break = c[c1] + nc * C_break
       n_break = nc * C + nb * B + na * A
       n_break *= np.random.random(3)
@@ -188,130 +188,130 @@ def break_it(startc,startfaces,pb,sizelim):
       edges = []
       lc = len(c)
       for face in faces:
-	for a in range(len(face)):
-	  ea = min(face[a], face[(a+1)%len(face)])
-	  eb = max(face[a], face[(a+1)%len(face)])
-	  tedges.append( ea * lc + eb )
+        for a in range(len(face)):
+          ea = min(face[a], face[(a+1)%len(face)])
+          eb = max(face[a], face[(a+1)%len(face)])
+          tedges.append( ea * lc + eb )
       for e in list(set(tedges)):
-	edges.append([ int(e/lc), e%lc ])
+        edges.append([ int(e/lc), e%lc ])
       newc = []
       newe = []
       for e in edges:
-	t = c[e[1]] - c[e[0]]
-	t /= np.linalg.norm(t)
-	sd = np.dot(n_break, c_break)
-	l = (sd - np.dot(n_break, c[e[0]])) / np.dot(n_break, t)
-	if l > 0 and l < np.linalg.norm(c[e[1]] - c[e[0]]):
-	  newc.append(c[e[0]] + l * t)
-	  newe.append(e)
+        t = c[e[1]] - c[e[0]]
+        t /= np.linalg.norm(t)
+        sd = np.dot(n_break, c_break)
+        l = (sd - np.dot(n_break, c[e[0]])) / np.dot(n_break, t)
+        if l > 0 and l < np.linalg.norm(c[e[1]] - c[e[0]]):
+          newc.append(c[e[0]] + l * t)
+          newe.append(e)
       newc = np.array(newc)
       cl = []
       cr = []
       pp = np.dot(newc[0],n_break)
       for a in range(len(c)):
-	if np.dot(c[a],n_break) > pp:
-	  cr.append(a)
-	else:
-	  cl.append(a)
+        if np.dot(c[a],n_break) > pp:
+          cr.append(a)
+        else:
+          cl.append(a)
       facel = []
       facer = []
       newedgel = []
       newedger = []
       for face in faces:
-	inl = 0
-	for f in face:
-	  if f in cl:
-	    inl |= 1
-	  else:
-	    inl |= 2
-	if inl == 1:
-	  tmp = []
-	  for f in face:
-	    tmp.append(cl.index(f))
-	  facel.append(tmp)
-	elif inl == 2:
-	  tmp = []
-	  for f in face:
-	    tmp.append(cr.index(f))
-	  facer.append(tmp)
-	else:
-	  tmpl = []
-	  tmpr = []
-	  for a in range(len(face)):
-	    b = (a + 1) % len(face)
-	    ainl = face[a] in cl
-	    binl = face[b] in cl
-	    if ainl:
-	      tmpl.append(cl.index(face[a]))
-	    else:
-	      tmpr.append(cr.index(face[a]))
-	    if ainl ^ binl:
-	      e = [min(face[a], face[b]), max(face[a], face[b])]
-	      inewe = newe.index(e)
-	      tmpl.append(len(cl) + inewe)
-	      tmpr.append(len(cr) + inewe)
-	  for a in range(len(tmpl)):
-	    b = (a + 1) % len(tmpl)
-	    if tmpl[a] >= len(cl) and tmpl[b] >= len(cl):
-	      newedgel.append([min(tmpl[a], tmpl[b]), max(tmpl[a], tmpl[b]) ])
-	  for a in range(len(tmpr)):
-	    b = (a + 1) % len(tmpr)
-	    if tmpr[a] >= len(cr) and tmpr[b] >= len(cr):
-	      newedger.append([min(tmpr[a], tmpr[b]), max(tmpr[a], tmpr[b]) ])
-	  facel.append(tmpl)
-	  facer.append(tmpr)
+        inl = 0
+        for f in face:
+          if f in cl:
+            inl |= 1
+          else:
+            inl |= 2
+        if inl == 1:
+          tmp = []
+          for f in face:
+            tmp.append(cl.index(f))
+          facel.append(tmp)
+        elif inl == 2:
+          tmp = []
+          for f in face:
+            tmp.append(cr.index(f))
+          facer.append(tmp)
+        else:
+          tmpl = []
+          tmpr = []
+          for a in range(len(face)):
+            b = (a + 1) % len(face)
+            ainl = face[a] in cl
+            binl = face[b] in cl
+            if ainl:
+              tmpl.append(cl.index(face[a]))
+            else:
+              tmpr.append(cr.index(face[a]))
+            if ainl ^ binl:
+              e = [min(face[a], face[b]), max(face[a], face[b])]
+              inewe = newe.index(e)
+              tmpl.append(len(cl) + inewe)
+              tmpr.append(len(cr) + inewe)
+          for a in range(len(tmpl)):
+            b = (a + 1) % len(tmpl)
+            if tmpl[a] >= len(cl) and tmpl[b] >= len(cl):
+              newedgel.append([min(tmpl[a], tmpl[b]), max(tmpl[a], tmpl[b]) ])
+          for a in range(len(tmpr)):
+            b = (a + 1) % len(tmpr)
+            if tmpr[a] >= len(cr) and tmpr[b] >= len(cr):
+              newedger.append([min(tmpr[a], tmpr[b]), max(tmpr[a], tmpr[b]) ])
+          facel.append(tmpl)
+          facer.append(tmpr)
       newfaceedges = []
       for a in range(len(newc) + len(c)):
-	for b in range(a):
-	  if [b, a] in newedgel:
-	    newfaceedges.append([b,a])
+        for b in range(a):
+          if [b, a] in newedgel:
+            newfaceedges.append([b,a])
       newface = []
       i = len(cl)
       while len(newfaceedges):
-	for a in range(len(newfaceedges)):
-	  if newfaceedges[a][0] == i:
-	    j = newfaceedges[a][1]
-	    newfaceedges.pop(a)
-	    break
-	  if newfaceedges[a][1] == i:
-	    j = newfaceedges[a][0]
-	    newfaceedges.pop(a)
-	    break
-	newface.append(j)
-	i = j
+        for a in range(len(newfaceedges)):
+          if newfaceedges[a][0] == i:
+            j = newfaceedges[a][1]
+            newfaceedges.pop(a)
+            break
+          if newfaceedges[a][1] == i:
+            j = newfaceedges[a][0]
+            newfaceedges.pop(a)
+            break
+        newface.append(j)
+        i = j
       facel.append(newface)
   #    newface = range(len(cr), len(cr) + len(newc))
   #    facer.append(newface)
       newfaceedges = []
       for a in range(len(newc) + len(c)):
-	for b in range(a):
-	  if [b, a] in newedger:
-	    newfaceedges.append([b,a])
+        for b in range(a):
+          if [b, a] in newedger:
+            newfaceedges.append([b,a])
       newface = []
       i = len(cr)
       while len(newfaceedges):
-	for a in range(len(newfaceedges)):
-	  if newfaceedges[a][0] == i:
-	    j = newfaceedges[a][1]
-	    newfaceedges.pop(a)
-	    break
-	  if newfaceedges[a][1] == i:
-	    j = newfaceedges[a][0]
-	    newfaceedges.pop(a)
-	    break
-	newface.append(j)
-	i = j
+        for a in range(len(newfaceedges)):
+          if newfaceedges[a][0] == i:
+            j = newfaceedges[a][1]
+            newfaceedges.pop(a)
+            break
+          if newfaceedges[a][1] == i:
+            j = newfaceedges[a][0]
+            newfaceedges.pop(a)
+            break
+        newface.append(j)
+        i = j
       facer.append(newface)
       #idaig
       clc = []
       crc = []
       for ci in cl:
-	clc.append(c[ci])
+        clc.append(c[ci])
       for ci in cr:
-	crc.append(c[ci])
+        crc.append(c[ci])
       for cc in newc:
-	clc.append(cc)
-	crc.append(cc)
+        clc.append(cc)
+        crc.append(cc)
       clc = np.array(clc)
       crc = np.array(crc)
       clist.append(clc)
@@ -324,7 +324,7 @@ def break_it(startc,startfaces,pb,sizelim):
       print_SUAB(c,faces)
 
 if len(sys.argv) < 8:
-  print "usage: %s fin old(0)new(1) seed pb sizelim sigma facelim" % (sys.argv[0])
+  print("usage: %s fin old(0)new(1) seed pb sizelim sigma facelim" % (sys.argv[0]))
   sys.exit(0)
 
 oldnew = int(sys.argv[2])
@@ -353,10 +353,10 @@ for line in f:
     faces.append([])
     if oldnew:
       for a in range(len(m)):
-	faces[i].append( int(m[a]) )
+        faces[i].append( int(m[a]) )
     else:
       for a in range(3,len(m)):
-	faces[i].append( int(m[a]) )
+        faces[i].append( int(m[a]) )
     i += 1
   if state == 3 and len(m) > 2:
     # edges
